@@ -14,9 +14,9 @@ const ENEMY_SPRITE_HEIGHT = 60;
 const ENEMY_SPEEDS = [0.005, 0.02, 0.01, 0.05];
 
 const playerSpriteImage =
-      "https://i.pinimg.com/originals/00/22/51/002251ab93aa8a09b5090fc4ad951f8c.png";
+  "https://i.pinimg.com/originals/00/22/51/002251ab93aa8a09b5090fc4ad951f8c.png";
 const enemySpriteImage =
-      "https://vignette.wikia.nocookie.net/mm54321/images/9/9d/Vector-goomba.png/revision/latest?cb=20141123221433";
+  "https://vignette.wikia.nocookie.net/mm54321/images/9/9d/Vector-goomba.png/revision/latest?cb=20141123221433";
 
 class Sprite {
   draw() {
@@ -151,8 +151,8 @@ function updateScene() {
   increaseScore();
   enemies.forEach(enemy => follow(player, enemy, enemy.speed));
   enemies.forEach((enemy, i) =>
-                  pushOff(enemy, enemies[(i + 1) % enemies.length])
-                 );
+    pushOff(enemy, enemies[(i + 1) % enemies.length])
+  );
   enemies.forEach(enemy => {
     if (haveCollided(enemy, player)) {
       progressBar.value -= ENEMY_DAMAGE;
@@ -182,21 +182,6 @@ function drawScene() {
   player.draw();
   enemies.forEach(enemy => enemy.draw());
   updateScene();
-}
-
-function restartGame() {
-  if (progressBar.value === 0) {
-    progressBar.value = 100;
-    score.innerHTML = 0;
-    Object.assign(player, { x: canvas.width / 2, y: canvas.height / 2 });
-    requestAnimationFrame(drawScene);
-    resetEnemies();
-  }
-}
-
-canvas.addEventListener("click", restartGame);
-requestAnimationFrame(drawScene);
-
 }
 
 function restartGame() {
