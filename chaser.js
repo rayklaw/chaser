@@ -4,14 +4,14 @@ const progressBar = document.querySelector("progress");
 let score = document.getElementById("score");
 
 const PLAYER_RADIUS = 25;
-const PLAYER_SPEED = 0.07;
+const PLAYER_SPEED = 0.02;
 const PLAYER_SPRITE_WIDTH = 60;
 const PLAYER_SPRITE_HEIGHT = 60;
 const ENEMY_RADIUS = 20;
 const ENEMY_DAMAGE = 2;
 const ENEMY_SPRITE_WIDTH = 60;
 const ENEMY_SPRITE_HEIGHT = 60;
-const ENEMY_SPEEDS = [0.005, 0.02, 0.01, 0.05];
+const ENEMY_SPEEDS = [0.01, 0.02, 0.03, 0.05];
 
 const playerSpriteImage =
   "https://i.pinimg.com/originals/00/22/51/002251ab93aa8a09b5090fc4ad951f8c.png";
