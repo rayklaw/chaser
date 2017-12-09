@@ -196,5 +196,3 @@ function restartGame() {
 
 canvas.addEventListener("click", restartGame);
 requestAnimationFrame(drawScene);
-
-
