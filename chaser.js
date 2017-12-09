@@ -195,5 +195,3 @@ function drawScene() {
 
 canvas.addEventListener("click", startGame);
 requestAnimationFrame(drawScene);
-
-
