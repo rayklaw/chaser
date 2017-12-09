@@ -16,8 +16,6 @@ const playerSpriteImage =
   "https://i.pinimg.com/originals/00/22/51/002251ab93aa8a09b5090fc4ad951f8c.png";
 const enemySpriteImage =
   "https://vignette.wikia.nocookie.net/mm54321/images/9/9d/Vector-goomba.png/revision/latest?cb=20141123221433";
-const backgroundImage =
-  "https://vignette.wikia.nocookie.net/fantendo/images/4/43/Mario_Bros_Map.jpg/revision/latest?cb=20140504182518";
 
 function startGame() {
   if (progressBar.value === 0) {
@@ -135,17 +133,17 @@ function follow(leader, follower, speed) {
   follower.y += (leader.y - follower.y) * speed;
 }
 
-function pushOff(c1, c2) {
-  let [dx, dy] = [c2.x - c1.x, c2.y - c1.y];
+function pushOff(sprite1, sprite2) {
+  let [dx, dy] = [sprite2.x - sprite1.x, sprite2.y - sprite1.y];
   const L = Math.hypot(dx, dy);
-  let distToMove = c1.radius + c2.radius - L;
+  let distToMove = sprite1.radius + sprite2.radius - L;
   if (distToMove > 0) {
     dx /= L;
     dy /= L;
-    c1.x -= dx * distToMove / 2;
-    c1.y -= dy * distToMove / 2;
-    c2.x += dx * distToMove / 2;
-    c2.y += dy * distToMove / 2;
+    sprite1.x -= dx * distToMove / 2;
+    sprite1.y -= dy * distToMove / 2;
+    sprite2.x += dx * distToMove / 2;
+    sprite2.y += dy * distToMove / 2;
   }
 }
 
