@@ -11,44 +11,12 @@ const ENEMY_RADIUS = 20;
 const ENEMY_DAMAGE = 2;
 const ENEMY_SPRITE_WIDTH = 60;
 const ENEMY_SPRITE_HEIGHT = 60;
+const ENEMY_SPEEDS = [0.005, 0.02, 0.01, 0.05];
 
 const playerSpriteImage =
-  "https://i.pinimg.com/originals/00/22/51/002251ab93aa8a09b5090fc4ad951f8c.png";
+      "https://i.pinimg.com/originals/00/22/51/002251ab93aa8a09b5090fc4ad951f8c.png";
 const enemySpriteImage =
-  "https://vignette.wikia.nocookie.net/mm54321/images/9/9d/Vector-goomba.png/revision/latest?cb=20141123221433";
-
-function startGame() {
-  if (progressBar.value === 0) {
-    progressBar.value = 100;
-    score.innerHTML = 0;
-    Object.assign(player, { x: canvas.width / 2, y: canvas.height / 2 });
-    requestAnimationFrame(drawScene);
-  }
-  resetEnemies();
-}
-
-function resetEnemies() {
-  enemies = [];
-  enemies.push(new Enemy(0, 0, ENEMY_RADIUS, 0.005));
-  enemies.push(new Enemy(canvas.width, 0, ENEMY_RADIUS, 0.02));
-  enemies.push(new Enemy(0, canvas.height, ENEMY_RADIUS, 0.01));
-  enemies.push(new Enemy(canvas.width, canvas.height, ENEMY_RADIUS, 0.05));
-}
-
-function increaseScore() {
-  let gameScore = score.innerHTML;
-  gameScore++;
-  score.innerHTML = gameScore;
-  score = document.getElementById("score");
-}
-
-function distanceBetween(sprite1, sprite2) {
-  return Math.hypot(sprite1.x - sprite2.x, sprite1.y - sprite2.y);
-}
-
-function haveCollided(sprite1, sprite2) {
-  return distanceBetween(sprite1, sprite2) < sprite1.radius + sprite2.radius;
-}
+      "https://vignette.wikia.nocookie.net/mm54321/images/9/9d/Vector-goomba.png/revision/latest?cb=20141123221433";
 
 class Sprite {
   draw() {
@@ -68,6 +36,28 @@ class Sprite {
       this.y = canvas.height - this.radius / 2;
     }
   }
+}
+
+function pushOff(sprite1, sprite2) {
+  let [dx, dy] = [sprite2.x - sprite1.x, sprite2.y - sprite1.y];
+  const L = Math.hypot(dx, dy);
+  let distToMove = sprite1.radius + sprite2.radius - L;
+  if (distToMove > 0) {
+    dx /= L;
+    dy /= L;
+    sprite1.x -= dx * distToMove / 2;
+    sprite1.y -= dy * distToMove / 2;
+    sprite2.x += dx * distToMove / 2;
+    sprite2.y += dy * distToMove / 2;
+  }
+}
+
+function distanceBetween(sprite1, sprite2) {
+  return Math.hypot(sprite1.x - sprite2.x, sprite1.y - sprite2.y);
+}
+
+function haveCollided(sprite1, sprite2) {
+  return distanceBetween(sprite1, sprite2) < sprite1.radius + sprite2.radius;
 }
 
 class Player extends Sprite {
@@ -114,11 +104,21 @@ class Enemy extends Sprite {
 }
 
 let enemies = [
-  new Enemy(0, canvas.height, ENEMY_RADIUS, 0.02),
-  new Enemy(canvas.width, canvas.height, ENEMY_RADIUS, 0.01),
-  new Enemy(0, 0, ENEMY_RADIUS, 0.002),
-  new Enemy(canvas.width, 0, ENEMY_RADIUS, 0.05)
+  new Enemy(0, 0, ENEMY_RADIUS, ENEMY_SPEEDS[0]),
+  new Enemy(canvas.width, 0, ENEMY_RADIUS, ENEMY_SPEEDS[1]),
+  new Enemy(0, canvas.height, ENEMY_RADIUS, ENEMY_SPEEDS[2]),
+  new Enemy(canvas.width, canvas.height, ENEMY_RADIUS, ENEMY_SPEEDS[3])
 ];
+
+function resetEnemies() {
+  enemies = [];
+  enemies.push(new Enemy(0, 0, ENEMY_RADIUS, ENEMY_SPEEDS[0]));
+  enemies.push(new Enemy(canvas.width, 0, ENEMY_RADIUS, ENEMY_SPEEDS[1]));
+  enemies.push(new Enemy(0, canvas.height, ENEMY_RADIUS, ENEMY_SPEEDS[2]));
+  enemies.push(
+    new Enemy(canvas.width, canvas.height, ENEMY_RADIUS, ENEMY_SPEEDS[3])
+  );
+}
 
 let mouse = { x: 0, y: 0 };
 document.body.addEventListener("mousemove", updateMouse);
@@ -133,18 +133,11 @@ function follow(leader, follower, speed) {
   follower.y += (leader.y - follower.y) * speed;
 }
 
-function pushOff(sprite1, sprite2) {
-  let [dx, dy] = [sprite2.x - sprite1.x, sprite2.y - sprite1.y];
-  const L = Math.hypot(dx, dy);
-  let distToMove = sprite1.radius + sprite2.radius - L;
-  if (distToMove > 0) {
-    dx /= L;
-    dy /= L;
-    sprite1.x -= dx * distToMove / 2;
-    sprite1.y -= dy * distToMove / 2;
-    sprite2.x += dx * distToMove / 2;
-    sprite2.y += dy * distToMove / 2;
-  }
+function increaseScore() {
+  let gameScore = score.innerHTML;
+  gameScore++;
+  score.innerHTML = gameScore;
+  score = document.getElementById("score");
 }
 
 function clearBackground() {
@@ -158,8 +151,8 @@ function updateScene() {
   increaseScore();
   enemies.forEach(enemy => follow(player, enemy, enemy.speed));
   enemies.forEach((enemy, i) =>
-    pushOff(enemy, enemies[(i + 1) % enemies.length])
-  );
+                  pushOff(enemy, enemies[(i + 1) % enemies.length])
+                 );
   enemies.forEach(enemy => {
     if (haveCollided(enemy, player)) {
       progressBar.value -= ENEMY_DAMAGE;
@@ -168,7 +161,7 @@ function updateScene() {
   if (progressBar.value <= 0) {
     ctx.font = "23px Helvetica";
     ctx.textAlign = "center";
-    ctx.fillStyle = "Orange";
+    ctx.fillStyle = "blue";
     ctx.fillText(
       "THE PRINCESS WAS IN ANOTHER CASTLE",
       canvas.width / 2,
@@ -191,5 +184,32 @@ function drawScene() {
   updateScene();
 }
 
-canvas.addEventListener("click", startGame);
+function restartGame() {
+  if (progressBar.value === 0) {
+    progressBar.value = 100;
+    score.innerHTML = 0;
+    Object.assign(player, { x: canvas.width / 2, y: canvas.height / 2 });
+    requestAnimationFrame(drawScene);
+    resetEnemies();
+  }
+}
+
+canvas.addEventListener("click", restartGame);
 requestAnimationFrame(drawScene);
+
+}
+
+function restartGame() {
+  if (progressBar.value === 0) {
+    progressBar.value = 100;
+    score.innerHTML = 0;
+    Object.assign(player, { x: canvas.width / 2, y: canvas.height / 2 });
+    requestAnimationFrame(drawScene);
+    resetEnemies();
+  }
+}
+
+canvas.addEventListener("click", restartGame);
+requestAnimationFrame(drawScene);
+
+
